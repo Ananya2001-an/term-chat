@@ -17,8 +17,3 @@ repos:
     - id: isort
       name: isort (python)
       args: [--filter-files]
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: "v1.3.0"
-  hooks:
-    - id: mypy
-      args: [--strict]
