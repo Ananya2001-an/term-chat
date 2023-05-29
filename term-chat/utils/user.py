@@ -1,5 +1,10 @@
-import typer
+import os
+import pickle
 import re
+
+import typer
+
+from ..utils.constants import console, error_style
 
 
 def check_username(username: str) -> str:
@@ -19,3 +24,13 @@ def check_email(email: str) -> str:
         return email
     else:
         raise typer.BadParameter("Give a valid email id")
+
+
+def get_current_user() -> dict | None:
+    if os.path.exists("current_user.pickle"):
+        with open("current_user.pickle", "rb") as f:
+            current_user = pickle.load(f)
+            return current_user
+    else:
+        console.print("🚫 You are not logged in!", style=error_style)
+        raise typer.Exit(1)
