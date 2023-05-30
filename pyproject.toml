@@ -7,7 +7,7 @@ name = "term-chat"
 version = "0.1.0"
 description = "A python CLI app that allows you to chat in your terminal itself so that you never have to leave your workspace again to connect with your team."
 authors = ["Ananya Nayak <ananyanayak102@gmail.com>"]
-license = "MIT"
+license = "GPL-3.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]

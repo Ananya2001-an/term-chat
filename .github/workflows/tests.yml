@@ -1,0 +1,47 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.gitignore'
+      - '**.md'
+      - 'LICENSE'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '.gitignore'
+      - '**.md'
+      - 'LICENSE'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version: ['3.8','3.11']
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python_version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python_version }}
+
+    - name: Set up Poetry
+      uses: abatilo/actions-poetry@v2.0.0
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: style & lint checks
+      run: pre-commit run --all-files
+
+    - name: pytest
+      run: python -m pytest -v
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,19 +1,14 @@
-import typer
 import json
-import threading
 import os
-from ..utils.constants import (
-    console,
-    error_style,
-    success_style,
-    message_style,
-    header_style,
-    spinner,
-)
-from ..utils.user import get_current_user
-from ..utils.room import get_room, get_input, show_messages
-from ..services.appwrite import dbs, database_id, rooms_collection_id
+import threading
+
+import typer
 from appwrite.exception import AppwriteException
+
+from ..services.appwrite import database_id, dbs, rooms_collection_id
+from ..utils.constants import console, error_style, spinner, success_style
+from ..utils.room import get_input, get_room, show_messages
+from ..utils.user import get_current_user
 
 chat_app = typer.Typer()
 current_room = {"messages": []}
@@ -49,7 +44,7 @@ def start():
         )
     elif current_user["email"] not in list_of_docs["documents"][0]["members"]:
         console.print(
-            f"🚫 You are not a member! Join first using command: room join",
+            "🚫 You are not a member! Join first using command: room join",
             style=error_style,
         )
     else:
@@ -65,7 +60,7 @@ def start():
         while True:
             message = typer.prompt("")
             if message == "exit":
-                console.print(f"Come again...👋", style=success_style)
+                console.print("Come again...👋", style=success_style)
                 stop_flag.set()
                 # Wait for the background thread to complete
                 background_thread.join()

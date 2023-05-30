@@ -9,7 +9,7 @@ from typing_extensions import Annotated
 
 from ..services.appwrite import users
 from ..utils.constants import console, error_style, spinner, success_style
-from ..utils.user import check_email, check_username
+from ..utils.user import check_email, check_username, get_current_user
 
 auth_app = typer.Typer()
 
@@ -83,3 +83,23 @@ def logout():
         console.print("🦄 You have been logged out successfully!", style=success_style)
     else:
         console.print("🚫 You are not logged in!", style=error_style)
+
+
+@auth_app.command()
+def whoami():
+    """Check the current user"""
+    current_user = get_current_user()
+    console.print(f"🦄 You are logged in as: {current_user['name']}", style=success_style)
+
+
+@auth_app.command()
+def delete_user():
+    """Delete the current user"""
+    current_user = get_current_user()
+    spinner("Deleting user...", 2)
+    try:
+        users.delete(current_user["$id"])
+        console.print(f"🦄 User {current_user['name']} deleted successfully!", style=success_style)
+        os.remove("current_user.pickle")
+    except AppwriteException:
+        console.print("🚫 Error deleting user! Try again.", style=error_style)
