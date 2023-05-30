@@ -40,7 +40,9 @@ jobs:
       run: poetry install
 
     - name: style & lint checks
-      run: pre-commit run --all-files
+      run: |
+        pre-commit install
+        pre-commit run --all-files
 
     - name: pytest
       run: python -m pytest -v
