@@ -1,15 +1,15 @@
-import typer
 import os
 import pickle
-import time
-from ..services.appwrite import users
-from ..utils.constants import error_style, success_style, console, spinner
-from ..utils.user import check_email, check_username
 
+import typer
 from appwrite.exception import AppwriteException
 from appwrite.id import ID
 from appwrite.query import Query
 from typing_extensions import Annotated
+
+from ..services.appwrite import users
+from ..utils.constants import console, error_style, spinner, success_style
+from ..utils.user import check_email, check_username
 
 auth_app = typer.Typer()
 

@@ -7,6 +7,8 @@ from rich.style import Style
 # styles for rich console
 error_style = Style(color="red", bold=True)
 success_style = Style(color="green", bold=True)
+message_style = Style(color="blue", bold=True)
+header_style = Style(color="magenta", bold=True)
 console = Console()
 
 

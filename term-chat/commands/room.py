@@ -1,14 +1,14 @@
-import typer
-import os
-import pickle
 import json
-from ..utils.constants import error_style, success_style, console, spinner
 
-from ..services.appwrite import dbs, database_id, rooms_collection_id
-from appwrite.id import ID
+import typer
 from appwrite.exception import AppwriteException
+from appwrite.id import ID
+from prettytable.colortable import ColorTable, Themes
+
+from ..services.appwrite import database_id, dbs, rooms_collection_id
+from ..utils.constants import console, error_style, spinner, success_style
+from ..utils.room import get_input, get_room
 from ..utils.user import get_current_user
-from ..utils.room import get_room
 
 room_app = typer.Typer()
 
@@ -23,7 +23,15 @@ def create():
         "admin": current_user["name"],
         "admin_email": current_user["email"],
         "members": [current_user["email"]],
-        "messages": [json.dumps({"id": current_user["email"], "message": "Welcome to the room!"})],
+        "messages": [
+            json.dumps(
+                {
+                    "id": current_user["email"],
+                    "username": current_user["name"],
+                    "message": "Welcome to the room!",
+                }
+            )
+        ],
     }
     spinner("Creating room...", 3)
     list_of_docs = get_room(data["admin_email"], data["name"])
@@ -52,12 +60,10 @@ def list_all():
 
 
 @room_app.command()
-def list_members():
-    """List the members of a chat room"""
-    current_user = get_current_user()
-    room_name = typer.prompt("Enter the name of the room you want to see members of")
-    room_admin_email = typer.prompt("Enter the email of the admin of the room")
-    spinner("Fetching members...", 3)
+def info():
+    """Gives info about a chat room in a table format"""
+    room_name, room_admin_email = get_input()
+    spinner("Fetching info...", 3)
     list_of_docs = get_room(room_admin_email, room_name)
     if list_of_docs["total"] == 0:
         console.print(
@@ -66,17 +72,23 @@ def list_members():
         )
     else:
         room = list_of_docs["documents"][0]
-        console.print(f"🦄 Members of {room_name} under admin {room_admin_email}:", style=success_style)
-        for member in room["members"]:
-            console.print(f"👉 {member}", style=success_style)
+        ptable = ColorTable(
+            ["Name", "Admin", "Member count", "Members list", "Message count"], theme=Themes.OCEAN
+        )
+        ptable.add_row(
+            [room["name"], room["admin"], len(room["members"]), room["members"], len(room["messages"])]
+        )
+        console.print(
+            f"🦄 Info about room {room_name} under admin {room_admin_email}:", style=success_style
+        )
+        print(ptable)
 
 
 @room_app.command()
 def join():
     """Join an existing chat room"""
     current_user = get_current_user()
-    room_name = typer.prompt("Enter the name of the room you want to join")
-    room_admin_email = typer.prompt("Enter the email of the admin of the room")
+    room_name, room_admin_email = get_input()
     spinner("Joining room...", 3)
     list_of_docs = get_room(room_admin_email, room_name)
 
@@ -109,8 +121,7 @@ def join():
 def leave():
     """Leave a chat room"""
     current_user = get_current_user()
-    room_name = typer.prompt("Enter the name of the room you want to leave")
-    room_admin_email = typer.prompt("Enter the email of the admin of the room")
+    room_name, room_admin_email = get_input()
     spinner("Leaving room...", 3)
     list_of_docs = get_room(room_admin_email, room_name)
 
