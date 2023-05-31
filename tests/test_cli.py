@@ -3,7 +3,7 @@ import importlib
 import pytest
 from typer.testing import CliRunner
 
-module = importlib.import_module("term-chat.__main__")
+module = importlib.import_module("term_chat.__main__")
 app = module.app
 
 

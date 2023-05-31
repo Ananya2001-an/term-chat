@@ -12,15 +12,15 @@
 ## Commands 🎮
 
 It's a Typer application, so you can use the `--help` flag to get a list of all the available commands.
-In development mode, you can run the application using `python -m term-chat` instead of `term-chat`.
+In development mode, you can run the application using `python -m term_chat`. 
 
 - Auth commands 
 
-    - `auth create-user`: Register a new user
-    - `auth login`: Login as an existing user (creates a pickle file in the current directory)
+    - `auth create-user <username> <email id>`: Register a new user
+    - `auth login <email id>`: Login as an existing user (creates a pickle file in the current directory)
     - `auth logout`: Logout the current user
     - `auth whoami`: Display the current user
-    - `auth delete-user`: Delete the current user from the database
+    - `auth delete-user`: Delete the current logged in user from the database
 
 - Room commands
     
@@ -69,7 +69,7 @@ In development mode, you can run the application using `python -m term-chat` ins
    poetry install
    ```
 
-4. Create dotenv file
+4. Create dotenv file and add necesary environment variables for the database connection:
 
    ```bash
    cp .env.example .env
@@ -78,7 +78,7 @@ In development mode, you can run the application using `python -m term-chat` ins
 5. Run the tests to make sure everything is working as expected:
 
    ```bash
-    python -m pytest -v
+    poetry run pytest tests
     ```
 
 6. Run the application:
