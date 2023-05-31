@@ -1,6 +1,7 @@
 name: tests
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -17,7 +18,7 @@ on:
       - 'LICENSE'
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -40,6 +41,11 @@ jobs:
       run: poetry install
 
     - name: pytest
-      run: python -m pytest -v
+      run: poetry run pytest tests
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        APPWRITE_PROJECT_ID: ${{ vars.APPWRITE_PROJECT_ID }}
+        APPWRITE_SECRET_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+        APPWRITE_DATABASE_ID: ${{ secrets.APPWRITE_DATABASE_ID }}
+        APPWRITE_COLLECTION_ID: ${{ secrets.APPWRITE_COLLECTION_ID }}
+
