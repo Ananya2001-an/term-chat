@@ -7,7 +7,7 @@
 
 **term-chat** is a simple command-line chat 💬 application written in Python🐍. It allows users to communicate with each other through a terminal interface.
 
-![gif](https://github.com/Ananya2001-an/term-chat/assets/55504616/7fbeaabf-322f-4f98-a5e8-b1250e12723e)
+![term-chat-demo](https://github.com/Ananya2001-an/term-chat/assets/55504616/12d49bd5-742f-4bb6-9f4a-7a2565f24b41)
 
 ## Commands 🎮
 

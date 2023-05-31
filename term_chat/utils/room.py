@@ -1,4 +1,5 @@
 import json
+from typing import Union
 
 import typer
 from appwrite.exception import AppwriteException
@@ -16,7 +17,7 @@ def get_input() -> list:
     return [room_name, room_admin_email]
 
 
-def get_room(admin_email: str, name: str = None) -> dict | None:
+def get_room(admin_email: str, name: str = None) -> Union[dict, None]:
     try:
         list_of_docs = dbs.list_documents(
             database_id,

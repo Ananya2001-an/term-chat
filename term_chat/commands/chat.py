@@ -15,7 +15,7 @@ current_room = {"messages": []}
 stop_flag = threading.Event()
 
 
-def subscribe() -> None:
+def subscribe(stop_flag) -> None:
     global current_room
     try:
         while not stop_flag.is_set():
@@ -50,8 +50,9 @@ def start():
     else:
         spinner("Opening chat room...", 2)
         global current_room
+        global stop_flag
         current_room = list_of_docs["documents"][0]
-        background_thread = threading.Thread(target=subscribe)
+        background_thread = threading.Thread(target=subscribe, args=(stop_flag,))
         # Set the thread as a daemon so it runs in the background
         background_thread.daemon = True
         # Start the thread

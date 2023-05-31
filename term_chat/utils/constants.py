@@ -13,7 +13,7 @@ console = Console()
 
 
 # progress spinner
-def spinner(text: str, timer: int) -> None:
+def spinner(text: str, timer: int):
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),

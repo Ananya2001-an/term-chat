@@ -1,6 +1,7 @@
 import os
 import pickle
 import re
+from typing import Union
 
 import typer
 
@@ -26,7 +27,7 @@ def check_email(email: str) -> str:
         raise typer.BadParameter("Give a valid email id")
 
 
-def get_current_user() -> dict | None:
+def get_current_user() -> Union[dict, None]:
     if os.path.exists("current_user.pickle"):
         with open("current_user.pickle", "rb") as f:
             current_user = pickle.load(f)
