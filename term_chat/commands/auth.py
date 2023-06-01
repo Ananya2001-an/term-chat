@@ -5,7 +5,6 @@ import typer
 from appwrite.exception import AppwriteException
 from appwrite.id import ID
 from appwrite.query import Query
-from typing_extensions import Annotated
 
 from ..services.appwrite import users
 from ..utils.constants import console, error_style, spinner, success_style
@@ -15,25 +14,19 @@ auth_app = typer.Typer()
 
 
 @auth_app.command()
-def create_user(
-    username: Annotated[
-        str,
-        typer.Argument(
-            help="username must be lowercase, alphanumeric, and between 3 to 10 characters",
-            callback=check_username,
-        ),
-    ],
-    email: Annotated[
-        str,
-        typer.Argument(help="give a valid email id", callback=check_email),
-    ],
-):
+def create_user():
     """Create a new user on term-chat"""
+    username: str = typer.prompt("Enter a username for your term-chat account")
+    check_username(username)
+    email: str = typer.prompt("Enter your email id")
+    check_email(email)
+
     spinner("Creating user...", 2)
     try:
-        users.create(user_id=ID.unique(), email=email, name=username)
+        users.create(user_id=ID.unique(), name=username, email=email)
         console.print(
-            f"🦄 Account created successfully for user: {email}! Please login to continue.",
+            f"🦄 Account created successfully for user: {username} '<{email}>'!"
+            "Please login to continue.",
             style=success_style,
         )
     except AppwriteException as e:
@@ -47,13 +40,11 @@ def create_user(
 
 
 @auth_app.command()
-def login(
-    email: Annotated[
-        str,
-        typer.Argument(help="give a valid email id", callback=check_email),
-    ]
-):
+def login():
     """Login to an existing user account"""
+    email: str = typer.prompt("Enter your email id")
+    check_email(email)
+
     if not os.path.exists("current_user.pickle"):
         spinner("Logging in...", 2)
         try:
@@ -67,9 +58,10 @@ def login(
                 console.print(
                     f"🦄 You are accessing the account of: {current_user['name']}", style=success_style
                 )
-        except AppwriteException:
+        except AppwriteException as e:
             console.print(
-                "🚫 Error fetching user with the given input credentials! Try again.", style=error_style
+                f"🚫 Error fetching user with the given input credentials! Try again. {e}",
+                style=error_style,
             )
     else:
         console.print("🚫 You are already logged in!", style=error_style)

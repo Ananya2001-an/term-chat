@@ -10,21 +10,37 @@ from ..utils.constants import console, error_style, header_style, message_style,
 from ..utils.user import get_current_user
 
 
+def check_room_id(room_id: str) -> None:
+    if not (room_id.isalnum() and len(room_id) <= 15):
+        console.print("🚫 Room id must be alphanumeric and less than 15 characters!", style=error_style)
+        raise typer.Exit(1)
+    elif (
+        dbs.list_documents(
+            database_id,
+            rooms_collection_id,
+            [Query.equal("room_id", room_id)],
+        )["total"]
+        != 0
+    ):
+        console.print(f"🚫 Room with id {room_id} is already taken!", style=error_style)
+        raise typer.Exit(1)
+    else:
+        return None
+
+
 def get_input() -> list:
     room_name = typer.prompt("Enter room name")
-    room_admin_email = typer.prompt("Enter room admin's email id")
+    room_id = typer.prompt("Enter room id")
 
-    return [room_name, room_admin_email]
+    return [room_name, room_id]
 
 
-def get_room(admin_email: str, name: str = None) -> Union[dict, None]:
+def get_room(room_id: str, name: str = None) -> Union[dict, None]:
     try:
         list_of_docs = dbs.list_documents(
             database_id,
             rooms_collection_id,
-            [Query.equal("name", name), Query.equal("admin_email", admin_email)]
-            if name
-            else [Query.equal("admin_email", admin_email)],
+            [Query.equal("name", name), Query.equal("room_id", room_id)],
         )
         return list_of_docs
     except AppwriteException as e:

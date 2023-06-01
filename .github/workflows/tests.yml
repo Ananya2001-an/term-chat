@@ -46,7 +46,7 @@ jobs:
         poetry run pre-commit run --all-files
 
     - name: Run tests with pytest
-      run: poetry run pytest tests
+      run: poetry run pytest -v
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         APPWRITE_PROJECT_ID: ${{ vars.APPWRITE_PROJECT_ID }}

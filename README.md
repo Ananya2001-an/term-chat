@@ -7,7 +7,7 @@
 
 **term-chat** is a simple command-line chat 💬 application written in Python🐍. It allows users to communicate with each other through a terminal interface.
 
-![term-chat-demo](https://github.com/Ananya2001-an/term-chat/assets/55504616/12d49bd5-742f-4bb6-9f4a-7a2565f24b41)
+
 
 ## Commands 🎮
 
@@ -16,11 +16,11 @@ In development mode, you can run the application using `python -m term_chat`.
 
 - Auth commands 
 
-    - `auth create-user <username> <email id>`: Register a new user
-    - `auth login <email id>`: Login as an existing user (creates a pickle file in the current directory)
+    - `auth create-user`: Register a new user
+    - `auth login`: Login as an existing user (creates a pickle file in the current directory)
     - `auth logout`: Logout the current user
     - `auth whoami`: Display the current user
-    - `auth delete-user`: Delete the current logged in user from the database
+    - `auth delete-user`: Delete the current logged-in user from the database
 
 - Room commands
     
@@ -69,7 +69,7 @@ In development mode, you can run the application using `python -m term_chat`.
    poetry install
    ```
 
-4. Create dotenv file and add necesary environment variables for the database connection:
+4. Create dotenv file and add necessary environment variables for the database connection:
 
    ```bash
    cp .env.example .env
@@ -78,7 +78,7 @@ In development mode, you can run the application using `python -m term_chat`.
 5. Run the tests to make sure everything is working as expected:
 
    ```bash
-    poetry run pytest tests
+    poetry run pytest -v
     ```
 
 6. Run the application:
