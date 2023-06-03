@@ -7,6 +7,8 @@
 
 **term-chat** is a simple command-line chat 💬 application written in Python🐍. It allows users to communicate with each other through a terminal interface.
 
+> You can read my hashnode article here to get an overview of the project: [TERM-CHAT: A simple command-line chat application](https://ananyacodes.hashnode.dev/term-chat-a-command-line-chat-application)
+
 ![gif](https://github.com/gis-ops/gtfs-fetcher/assets/55504616/95e29232-7800-40c6-aee7-39f8f83f1d2e)
 
 ## Commands 🎮
