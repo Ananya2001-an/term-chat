@@ -5,8 +5,6 @@ from typing import Union
 
 import typer
 
-from ..utils.constants import console, error_style
-
 
 def check_username(username: str) -> str:
     if not (len(username) >= 3 and len(username) <= 10):
@@ -33,5 +31,5 @@ def get_current_user() -> Union[dict, None]:
             current_user = pickle.load(f)
             return current_user
     else:
-        console.print("🚫 You are not logged in!", style=error_style)
+        typer.secho("🚫 You are not logged in!", fg=typer.colors.RED)
         raise typer.Exit(1)

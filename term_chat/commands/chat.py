@@ -6,7 +6,7 @@ import typer
 from appwrite.exception import AppwriteException
 
 from ..services.appwrite import database_id, dbs, rooms_collection_id
-from ..utils.constants import console, error_style, spinner, success_style
+from ..utils.constants import spinner
 from ..utils.room import get_input, get_room, show_messages
 from ..utils.user import get_current_user
 
@@ -25,7 +25,7 @@ def subscribe(stop_flag) -> None:
                 os.system("cls" if os.name == "nt" else "clear")
                 show_messages(current_room)
     except AppwriteException as e:
-        console.print(f"🚫 Error fetching document! '{e.message}' ", style=error_style)
+        typer.secho(f"🚫 Error fetching document! '{e.message}' ", fg=typer.colors.RED)
         raise typer.Exit(1)
 
 
@@ -38,14 +38,14 @@ def start():
     list_of_docs = get_room(room_admin_email, room_name)
 
     if list_of_docs["total"] == 0:
-        console.print(
+        typer.secho(
             f"🚫 Room with name {room_name} under admin {room_admin_email}" " does not exist!",
-            style=error_style,
+            fg=typer.colors.RED,
         )
     elif current_user["email"] not in list_of_docs["documents"][0]["members"]:
-        console.print(
+        typer.secho(
             "🚫 You are not a member! Join first using command: room join",
-            style=error_style,
+            fg=typer.colors.RED,
         )
     else:
         spinner("Opening chat room...", 2)
@@ -61,7 +61,7 @@ def start():
         while True:
             message = typer.prompt("")
             if message == "exit":
-                console.print("Come again...👋", style=success_style)
+                typer.secho("Come again...👋", fg=typer.colors.GREEN)
                 stop_flag.set()
                 # Wait for the background thread to complete
                 background_thread.join()
@@ -82,6 +82,6 @@ def start():
                         database_id, rooms_collection_id, current_room["$id"], updated_messages
                     )
                 except AppwriteException as e:
-                    console.print(
-                        f"🚫 Error sending message! Try again. '{e.message}' ", style=error_style
+                    typer.secho(
+                        f"🚫 Error sending message! Try again. '{e.message}' ", fg=typer.colors.RED
                     )

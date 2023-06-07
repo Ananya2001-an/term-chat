@@ -7,7 +7,7 @@ from appwrite.query import Query
 from prettytable.colortable import ColorTable, Themes
 
 from ..services.appwrite import database_id, dbs, rooms_collection_id
-from ..utils.constants import console, error_style, spinner, success_style
+from ..utils.constants import spinner
 from ..utils.room import check_room_id, get_input, get_room
 from ..utils.user import get_current_user
 
@@ -49,11 +49,11 @@ def create():
     if list_of_docs["total"] == 0:
         try:
             dbs.create_document(database_id, rooms_collection_id, ID.unique(), data)
-            console.print(f"🦄 Created room {data['name']} successfully!", style=success_style)
+            typer.secho(f"🦄 Created room {data['name']} successfully!", fg=typer.colors.GREEN)
         except AppwriteException as e:
-            console.print(f"🚫 Error creating room! Try again. '{e.message}' ", style=error_style)
+            typer.secho(f"🚫 Error creating room! Try again. '{e.message}' ", fg=typer.colors.RED)
     else:
-        console.print(f"🚫 Room with name {data['name']} already exists!", style=error_style)
+        typer.secho(f"🚫 Room with name {data['name']} already exists!", fg=typer.colors.RED)
 
 
 @room_app.command()
@@ -65,11 +65,11 @@ def list_all():
         database_id, rooms_collection_id, [Query.equal("admin_email", current_user["email"])]
     )
     if list_of_docs["total"] == 0:
-        console.print("🚫 You have not created any rooms yet!", style=error_style)
+        typer.secho("🚫 You have not created any rooms yet!", fg=typer.colors.RED)
     else:
-        console.print("🦄 Your rooms:", style=success_style)
+        typer.secho("🦄 Your rooms:", fg=typer.colors.GREEN)
         for doc in list_of_docs["documents"]:
-            console.print(f"👉 {doc['name']}", style=success_style)
+            typer.secho(f"👉 {doc['name']}", fg=typer.colors.GREEN)
 
 
 @room_app.command()
@@ -79,9 +79,9 @@ def info():
     spinner("Fetching info...", 3)
     list_of_docs = get_room(room_id, room_name)
     if list_of_docs["total"] == 0:
-        console.print(
+        typer.secho(
             f"🚫 Room with name {room_name} and id {room_id}" " does not exist!",
-            style=error_style,
+            fg=typer.colors.RED,
         )
     else:
         room = list_of_docs["documents"][0]
@@ -91,7 +91,7 @@ def info():
         ptable.add_row(
             [room["name"], room["admin"], len(room["members"]), room["members"], len(room["messages"])]
         )
-        console.print(f"🦄 Info about room {room_name} with id {room_id}:", style=success_style)
+        typer.secho(f"🦄 Info about room {room_name} with id {room_id}:", fg=typer.colors.GREEN)
         print(ptable)
 
 
@@ -104,28 +104,28 @@ def join():
     list_of_docs = get_room(room_id, room_name)
 
     if list_of_docs["total"] == 0:
-        console.print(
+        typer.secho(
             f"🚫 Room with name {room_name} and id {room_id}" " does not exist!",
-            style=error_style,
+            fg=typer.colors.RED,
         )
     else:
         room = list_of_docs["documents"][0]
         if current_user["email"] in room["members"]:
-            console.print(
+            typer.secho(
                 f"🚫 You are already a member of {room_name} with id {room_id}!",
-                style=error_style,
+                fg=typer.colors.RED,
             )
         else:
             room["members"].append(current_user["email"])
             updated_members = {"members": room["members"]}
             try:
                 dbs.update_document(database_id, rooms_collection_id, room["$id"], updated_members)
-                console.print(
+                typer.secho(
                     f"🦄 Joined room {room_name} with id {room_id}" " successfully!",
-                    style=success_style,
+                    fg=typer.colors.GREEN,
                 )
             except AppwriteException as e:
-                console.print(f"🚫 Error joining room! Try again. '{e.message}' ", style=error_style)
+                typer.secho(f"🚫 Error joining room! Try again. '{e.message}' ", fg=typer.colors.RED)
 
 
 @room_app.command()
@@ -137,28 +137,28 @@ def leave():
     list_of_docs = get_room(room_id, room_name)
 
     if list_of_docs["total"] == 0:
-        console.print(
+        typer.secho(
             f"🚫 Room with name {room_name} and id {room_id}" " does not exist!",
-            style=error_style,
+            fg=typer.colors.RED,
         )
     else:
         room = list_of_docs["documents"][0]
         if current_user["email"] not in room["members"]:
-            console.print(
+            typer.secho(
                 f"🚫 You are not a member of {room_name} with id {room_id}!",
-                style=error_style,
+                fg=typer.colors.RED,
             )
         else:
             room["members"].remove(current_user["email"])
             updated_members = {"members": room["members"]}
             try:
                 dbs.update_document(database_id, rooms_collection_id, room["$id"], updated_members)
-                console.print(
+                typer.secho(
                     f"🦄 Left room {room_name} with id {room_id}" " successfully!",
-                    style=success_style,
+                    fg=typer.colors.GREEN,
                 )
             except AppwriteException as e:
-                console.print(f"🚫 Error leaving room! Try again. '{e.message}' ", style=error_style)
+                typer.secho(f"🚫 Error leaving room! Try again. '{e.message}' ", fg=typer.colors.RED)
 
 
 @room_app.command()
@@ -174,11 +174,11 @@ def delete():
     )
 
     if list_of_docs["total"] == 0:
-        console.print(f"🚫 Room with name {room_name} does not exist!", style=error_style)
+        typer.secho(f"🚫 Room with name {room_name} does not exist!", fg=typer.colors.RED)
     else:
         room = list_of_docs["documents"][0]
         try:
             dbs.delete_document(database_id, rooms_collection_id, room["$id"])
-            console.print(f"🦄 Deleted room {room_name} successfully!", style=success_style)
+            typer.secho(f"🦄 Deleted room {room_name} successfully!", fg=typer.colors.GREEN)
         except AppwriteException as e:
-            console.print(f"🚫 Error deleting room! Try again. '{e.message}' ", style=error_style)
+            typer.secho(f"🚫 Error deleting room! Try again. '{e.message}' ", fg=typer.colors.RED)

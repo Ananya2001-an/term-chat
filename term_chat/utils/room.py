@@ -6,13 +6,12 @@ from appwrite.exception import AppwriteException
 from appwrite.query import Query
 
 from ..services.appwrite import database_id, dbs, rooms_collection_id
-from ..utils.constants import console, error_style, header_style, message_style, success_style
 from ..utils.user import get_current_user
 
 
 def check_room_id(room_id: str) -> None:
     if not (room_id.isalnum() and len(room_id) <= 15):
-        console.print("🚫 Room id must be alphanumeric and less than 15 characters!", style=error_style)
+        typer.secho("🚫 Room id must be alphanumeric and less than 15 characters!", fg=typer.colors.RED)
         raise typer.Exit(1)
     elif (
         dbs.list_documents(
@@ -22,7 +21,7 @@ def check_room_id(room_id: str) -> None:
         )["total"]
         != 0
     ):
-        console.print(f"🚫 Room with id {room_id} is already taken!", style=error_style)
+        typer.secho(f"🚫 Room with id {room_id} is already taken!", fg=typer.colors.RED)
         raise typer.Exit(1)
     else:
         return None
@@ -44,21 +43,25 @@ def get_room(room_id: str, name: str = None) -> Union[dict, None]:
         )
         return list_of_docs
     except AppwriteException as e:
-        console.print(f"🚫 DB query error! '{e.message}' ", style=error_style)
+        typer.secho(f"🚫 DB query error! '{e.message}' ", fg=typer.colors.RED)
         raise typer.Exit(1)
 
 
 def show_messages(room: dict) -> None:
     current_user = get_current_user()
-    console.print(f"🦄 Welcome to {room['name']}!", style=header_style)
-    console.print(f"👉 Admin: {room['admin']} <'{room['admin_email']}'>", style=success_style)
-    console.print(f"👉 Members: {', '.join(room['members'])}", style=success_style)
-    console.print("👉 Messages:", style=success_style)
+    typer.secho(f"🦄 Welcome to {room['name']}!", fg=typer.colors.MAGENTA)
+    typer.secho(f"👉 Admin: {room['admin']} <'{room['admin_email']}'>", fg=typer.colors.GREEN)
+    typer.secho(f"👉 Members: {', '.join(room['members'])}", fg=typer.colors.GREEN)
+    typer.secho("👉 Messages:", fg=typer.colors.GREEN)
     for message in room["messages"]:
         msg_dict = json.loads(message)
-        console.print(
+        typer.secho(
             f"👉 {msg_dict['username'] if msg_dict['username'] != current_user['name'] else 'You'}"
             f": {msg_dict['message']}",
-            style=(message_style if msg_dict["username"] != current_user["name"] else header_style),
+            fg=(
+                typer.colors.CYAN
+                if msg_dict["username"] != current_user["name"]
+                else typer.colors.MAGENTA
+            ),
         )
-    console.print("👉 Enter your message below:(type 'exit' to leave)", style=success_style)
+    typer.secho("👉 Enter your message below:(type 'exit' to leave)", fg=typer.colors.GREEN)

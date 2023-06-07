@@ -7,7 +7,7 @@ from appwrite.id import ID
 from appwrite.query import Query
 
 from ..services.appwrite import users
-from ..utils.constants import console, error_style, spinner, success_style
+from ..utils.constants import spinner
 from ..utils.user import check_email, check_username, get_current_user
 
 auth_app = typer.Typer()
@@ -24,18 +24,18 @@ def create_user():
     spinner("Creating user...", 2)
     try:
         users.create(user_id=ID.unique(), name=username, email=email)
-        console.print(
+        typer.secho(
             f"🦄 Account created successfully for user: {username} '<{email}>'!"
             "Please login to continue.",
-            style=success_style,
+            fg=typer.colors.GREEN,
         )
     except AppwriteException as e:
         if e.message.startswith("A user with the same email"):
-            console.print("🚫 A user with the same email already exists!", style=error_style)
+            typer.secho("🚫 A user with the same email already exists!", fg=typer.colors.RED)
         else:
-            console.print(
+            typer.secho(
                 "🚫 Sorry! There was an error creating your account. Please try again later.",
-                style=error_style,
+                fg=typer.colors.RED,
             )
 
 
@@ -50,21 +50,21 @@ def login():
         try:
             list_of_users = users.list(queries=[Query.equal("email", [email])])
             if list_of_users["total"] == 0:
-                console.print("🚫 No users found! Please create an account first.", style=error_style)
+                typer.secho("🚫 No users found! Please create an account first.", fg=typer.colors.RED)
             else:
                 current_user = list_of_users["users"][0]
                 with open("current_user.pickle", "wb") as file:
                     pickle.dump(current_user, file)
-                console.print(
-                    f"🦄 You are accessing the account of: {current_user['name']}", style=success_style
+                typer.secho(
+                    f"🦄 You are accessing the account of: {current_user['name']}", fg=typer.colors.GREEN
                 )
         except AppwriteException as e:
-            console.print(
+            typer.secho(
                 f"🚫 Error fetching user with the given input credentials! Try again. {e}",
-                style=error_style,
+                fg=typer.colors.RED,
             )
     else:
-        console.print("🚫 You are already logged in!", style=error_style)
+        typer.secho("🚫 You are already logged in!", fg=typer.colors.RED)
 
 
 @auth_app.command()
@@ -72,16 +72,16 @@ def logout():
     """Logout the current user"""
     if os.path.exists("current_user.pickle"):
         os.remove("current_user.pickle")
-        console.print("🦄 You have been logged out successfully!", style=success_style)
+        typer.secho("🦄 You have been logged out successfully!", fg=typer.colors.GREEN)
     else:
-        console.print("🚫 You are not logged in!", style=error_style)
+        typer.secho("🚫 You are not logged in!", fg=typer.colors.RED)
 
 
 @auth_app.command()
 def whoami():
     """Check the current user"""
     current_user = get_current_user()
-    console.print(f"🦄 You are logged in as: {current_user['name']}", style=success_style)
+    typer.secho(f"🦄 You are logged in as: {current_user['name']}", fg=typer.colors.GREEN)
 
 
 @auth_app.command()
@@ -91,7 +91,7 @@ def delete_user():
     spinner("Deleting user...", 2)
     try:
         users.delete(current_user["$id"])
-        console.print(f"🦄 User {current_user['name']} deleted successfully!", style=success_style)
+        typer.secho(f"🦄 User {current_user['name']} deleted successfully!", fg=typer.colors.GREEN)
         os.remove("current_user.pickle")
     except AppwriteException:
-        console.print("🚫 Error deleting user! Try again.", style=error_style)
+        typer.secho("🚫 Error deleting user! Try again.", fg=typer.colors.RED)

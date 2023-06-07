@@ -1,10 +1,7 @@
-import importlib
-
 import pytest
 from typer.testing import CliRunner
 
-module = importlib.import_module("term_chat.__main__")
-app = module.app
+from term_chat.__main__ import app
 
 
 @pytest.fixture(scope="module")
