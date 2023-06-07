@@ -42,29 +42,30 @@ def create_user():
 @auth_app.command()
 def login():
     """Login to an existing user account"""
+    if os.path.exists("current_user.pickle"):
+        typer.secho("🚫 You are already logged in!", fg=typer.colors.RED)
+        return
+
     email: str = typer.prompt("Enter your email id")
     check_email(email)
 
-    if not os.path.exists("current_user.pickle"):
-        spinner("Logging in...", 2)
-        try:
-            list_of_users = users.list(queries=[Query.equal("email", [email])])
-            if list_of_users["total"] == 0:
-                typer.secho("🚫 No users found! Please create an account first.", fg=typer.colors.RED)
-            else:
-                current_user = list_of_users["users"][0]
-                with open("current_user.pickle", "wb") as file:
-                    pickle.dump(current_user, file)
-                typer.secho(
-                    f"🦄 You are accessing the account of: {current_user['name']}", fg=typer.colors.GREEN
-                )
-        except AppwriteException as e:
+    spinner("Logging in...", 2)
+    try:
+        list_of_users = users.list(queries=[Query.equal("email", [email])])
+        if list_of_users["total"] == 0:
+            typer.secho("🚫 No users found! Please create an account first.", fg=typer.colors.RED)
+        else:
+            current_user = list_of_users["users"][0]
+            with open("current_user.pickle", "wb") as file:
+                pickle.dump(current_user, file)
             typer.secho(
-                f"🚫 Error fetching user with the given input credentials! Try again. {e}",
-                fg=typer.colors.RED,
+                f"🦄 You are accessing the account of: {current_user['name']}", fg=typer.colors.GREEN
             )
-    else:
-        typer.secho("🚫 You are already logged in!", fg=typer.colors.RED)
+    except AppwriteException as e:
+        typer.secho(
+            f"🚫 Error fetching user with the given input credentials! Try again. {e}",
+            fg=typer.colors.RED,
+        )
 
 
 @auth_app.command()

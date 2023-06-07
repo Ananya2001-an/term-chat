@@ -53,9 +53,8 @@ def start():
         global stop_flag
         current_room = list_of_docs["documents"][0]
         background_thread = threading.Thread(target=subscribe, args=(stop_flag,))
-        # Set the thread as a daemon so it runs in the background
+        # Set the thread as a daemon, so it runs in the background
         background_thread.daemon = True
-        # Start the thread
         background_thread.start()
         show_messages(current_room)
         while True:

@@ -1,13 +1,13 @@
 import os
 import pickle
 import re
-from typing import Union
+from typing import Optional
 
 import typer
 
 
-def check_username(username: str) -> str:
-    if not (len(username) >= 3 and len(username) <= 10):
+def check_username(username: str) -> Optional[str]:
+    if not (3 <= len(username) <= 10):
         raise typer.BadParameter("Username must be between 3 and 10 characters")
     elif not username.isalnum():
         raise typer.BadParameter("Username must be alphanumeric; no other special chars allowed!")
@@ -17,7 +17,7 @@ def check_username(username: str) -> str:
         return username
 
 
-def check_email(email: str) -> str:
+def check_email(email: str) -> Optional[str]:
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     if re.match(pattern, email):
         return email
@@ -25,7 +25,7 @@ def check_email(email: str) -> str:
         raise typer.BadParameter("Give a valid email id")
 
 
-def get_current_user() -> Union[dict, None]:
+def get_current_user() -> Optional[dict]:
     if os.path.exists("current_user.pickle"):
         with open("current_user.pickle", "rb") as f:
             current_user = pickle.load(f)

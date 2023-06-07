@@ -1,5 +1,5 @@
 import json
-from typing import Union
+from typing import Optional
 
 import typer
 from appwrite.exception import AppwriteException
@@ -27,14 +27,14 @@ def check_room_id(room_id: str) -> None:
         return None
 
 
-def get_input() -> list:
+def get_input() -> list[str]:
     room_name = typer.prompt("Enter room name")
     room_id = typer.prompt("Enter room id")
 
     return [room_name, room_id]
 
 
-def get_room(room_id: str, name: str = None) -> Union[dict, None]:
+def get_room(room_id: str, name: str) -> Optional[dict]:
     try:
         list_of_docs = dbs.list_documents(
             database_id,
